@@ -1,0 +1,92 @@
+-- a brief look at the data
+select *
+ from customer.`customer-churn-records`;
+ 
+-- checking for missing values 
+select * 
+from customer.`customer-churn-records` 
+where CustomerId is NULL
+or Exited is NULL;
+
+-- delete missing values
+delete 
+from customer.`customer-churn-records`
+where RowNumber is NULL
+or CustomerId is NULL
+or Surname is NULL 
+or CreditScore is NULL
+or Geography is NULL
+or Age is NULL
+or Tenure is NULL
+or Balance is NULL
+or NumOfProducts is NULL
+or HasCrCard is NULL
+or IsActiveMember is NULL
+or EstimatedSalary is NULL
+or Exited is NULL 
+or Complain is NULL 
+or SatisfactionScore is NULl
+or CardType is NULL
+or PointEarned is NULL;
+
+-- get total rows in dataset
+select count(*)
+from customer.`customer-churn-records`;
+
+-- check if there are duplicate values (there are not)
+SELECT distinct count(*) 
+from customer.`customer-churn-records`;
+
+-- delete unneeded features
+alter table customer.`customer-churn-records`
+drop column RowNumber
+, drop column CustomerId
+, drop column Surname;
+
+-- check for churn ratio
+select Exited, count(*) as count
+from customer.`customer-churn-records`
+group by Exited;
+
+-- checking on geographical correlation
+select
+    Geography
+    , avg(Age) as Avg_Age
+    , count(*) as Total_Customers
+    , sum(EstimatedSalary) as Total_Salary
+    , sum(Exited) as churned
+from
+    customer.`customer-churn-records`
+group by
+    Geography;
+    
+-- checking on gender's correlation
+select
+    Gender
+    , avg(Age) as Avg_Age
+    , count(*) as Total_Customers
+    , sum(EstimatedSalary) as Total_Salary
+    , sum(Exited) as churned
+from
+    customer.`customer-churn-records`
+group by
+    Gender;
+
+-- checking on age groups' correlation
+select
+    case
+        when Age < 30 then 'Under 30'
+        when Age between 30 and 39 then '30-39'
+        when Age between 40 and 49 then '40-49'
+        when Age between 50 and 59 then '50-59'
+        else '60 and Over'
+    end as Age_Group,
+    count(*) as Total_Customers
+from
+    customer.`customer-churn-records`
+group by
+    Age_Group
+order by Total_Customers;
+
+
+
